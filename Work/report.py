@@ -34,7 +34,7 @@ def read_prices():
 
     return dict_prices
 
-def gain_loss():
+def calculate_total_gain_loss():
     portfolio = read_portfolio('Data/portfolio.csv')
     prices = read_prices()
 
@@ -56,3 +56,19 @@ def gain_loss():
         print('Loss', share_value)
     else:
         print('Gain', share_value)
+
+def make_report(portfolio, prices):
+    portfolio_with_change = []
+    headers = ('Name', 'Shares', 'Price', 'Change')
+    separator = '-' * 10 + ' '
+
+    #Calculating Gaing/Loss
+    for s in portfolio:
+        portfolio_with_change.append((s['name'], s['shares'], prices[s['name']] , prices[s['name']] - s['price']))
+
+    #Printing table
+    print('%10s %10s %10s %10s' % headers)
+    print(separator * len(headers))
+    for name, shares, prices, change in portfolio_with_change:
+        prices_s = '$' + str(prices)
+        print(f'{name:>10s} {shares:>10d} {prices_s:>10s} {change:>10.2f}')
