@@ -5,23 +5,30 @@ import csv
 from pprint import pprint
 
 def read_portfolio(filename):
-    portfolio = []
+    select = ['name', 'shares', 'price']
 
     f = open(filename)
     rows = csv.reader(f)
     headers = next(rows)
+    indices = [ headers.index(colname) for colname in select ]
 
-    for rowno, row in enumerate(rows):
-        record = dict(zip(headers, row))
-        try:
-            stocks = {
-                    'name'  : record['name'],
-                    'shares' : int(record['shares']),
-                    'price' : float(record['price'])
-            }
-            portfolio.append(stocks)
-        except ValueError as e:
-            print(f"Row {rowno} Couldn't convert: {row}")
+    try:
+        portfolio = [ { colname: row[index] for colname, index in zip(select, indices) }  for row in rows ]
+    except ValueError as e:
+        print(f"Row {rowno} Couldn't convert: {row}")
+
+    #for rowno, row in enumerate(rows):
+    #    record = dict(zip(headers, row))
+    #    try:
+            #stocks = {
+            #        'name'  : record['name'],
+            #        'shares' : int(record['shares']),
+            #        'price' : float(record['price'])
+            #}
+            #portfolio.append(stocks)
+
+        #except ValueError as e:
+        #    print(f"Row {rowno} Couldn't convert: {row}")
 
     return portfolio
 
@@ -68,11 +75,11 @@ def make_report(portfolio, prices):
 
     #Calculating Gaing/Loss
     for s in portfolio:
-        portfolio_with_change.append((s['name'], s['shares'], prices[s['name']] , prices[s['name']] - s['price']))
+        portfolio_with_change.append((s['name'], s['shares'], prices[s['name']] , float(prices[s['name']]) - float(s['price'])))
 
     #Printing table
     print('%10s %10s %10s %10s' % headers)
     print(separator * len(headers))
     for name, shares, prices, change in portfolio_with_change:
         prices_s = '$' + str(prices)
-        print(f'{name:>10s} {shares:>10d} {prices_s:>10s} {change:>10.2f}')
+        print(f'{name:>10s} {shares:>10s} {prices_s:>10s} {change:>10.2f}')
