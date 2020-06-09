@@ -4,18 +4,21 @@
 import csv
 import sys
 
-def portfolio(filename):
+def portfolio_cost(filename):
     total_cost = 0
 
     f = open(filename)
-    lines = csv.reader(f)
-    headers = next(lines)
+    rows = csv.reader(f)
+    headers = next(rows)
 
-    for fields in lines:
+    for rowno, row in enumerate(rows, start=1):
+        record = dict(zip(headers, row))
         try:
-            total_cost = total_cost + (int(fields[1]) * float(fields[2]))
+            nshares = int(record['shares'])
+            price = float(record['price'])
+            total_cost += (nshares * price)
         except ValueError as e:
-            print("couldn't parse", fields)
+            print(f"Row {rowno}: Couldn't convert: {row}")
 
     return total_cost
 
@@ -25,5 +28,5 @@ if len(sys.argv) == 2:
 else:
     filename = 'Data/portfolio.csv'
 
-cost = portfolio(filename)
+cost = portfolio_cost(filename)
 print('Total cost:', cost)

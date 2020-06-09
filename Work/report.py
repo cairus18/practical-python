@@ -8,17 +8,20 @@ def read_portfolio(filename):
     portfolio = []
 
     f = open(filename)
-    lines = csv.reader(f)
-    headers = next(lines)
+    rows = csv.reader(f)
+    headers = next(rows)
 
-    for fields in lines:
-        holding_dict = {}
+    for rowno, row in enumerate(rows):
+        record = dict(zip(headers, row))
         try:
-            #holding = (fields[0], int(fields[1]), float(fields[2]))
-            holding_dict = {'name' : fields[0], 'shares' : int(fields[1]), 'price' : float(fields[2]) }
-            portfolio.append(holding_dict)
+            stocks = {
+                    'name'  : record['name'],
+                    'shares' : int(record['shares']),
+                    'price' : float(record['price'])
+            }
+            portfolio.append(stocks)
         except ValueError as e:
-            print("couldn't parse", fields)
+            print(f"Row {rowno} Couldn't convert: {row}")
 
     return portfolio
 
@@ -37,7 +40,8 @@ def read_prices():
 def calculate_total_gain_loss():
     portfolio = read_portfolio('Data/portfolio.csv')
     prices = read_prices()
-
+    print(portfolio)
+    type(portfolio)
     # Calculate the total cost of the portfolio
     total_cost = 0.0
     for s in portfolio:
