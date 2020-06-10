@@ -4,7 +4,11 @@
 import csv
 from pprint import pprint
 
-def read_portfolio(filename):
+def read_portfolio(filename: str) -> dict:
+    '''
+    Read a stock portfolio file into a list of dictionaries with keys
+    name, shares, and price.
+    '''
     select = ['name', 'shares', 'price']
 
     f = open(filename)
@@ -26,17 +30,16 @@ def read_portfolio(filename):
             #        'price' : float(record['price'])
             #}
             #portfolio.append(stocks)
-
         #except ValueError as e:
         #    print(f"Row {rowno} Couldn't convert: {row}")
 
     return portfolio
 
 
-def read_prices():
+def read_prices(filename: str) -> dict:
     dict_prices = {}
 
-    f = open('Data/prices.csv', 'r')
+    f = open(filename, 'r')
     rows = csv.reader(f)
     for row in rows:
         if row:
@@ -68,18 +71,23 @@ def calculate_total_gain_loss():
     else:
         print('Gain', share_value)
 
-def make_report(portfolio, prices):
-    portfolio_with_change = []
-    headers = ('Name', 'Shares', 'Price', 'Change')
-    separator = '-' * 10 + ' '
+def portfolio_report(portfolio, prices):
+    portfolio = read_portfolio(portfolio)
+    prices = read_prices(prices)
 
+    portfolio_with_change = []
     #Calculating Gaing/Loss
     for s in portfolio:
         portfolio_with_change.append((s['name'], s['shares'], prices[s['name']] , float(prices[s['name']]) - float(s['price'])))
 
+    print_report(portfolio_with_change)
+
+def print_report(report):
+    headers = ('Name', 'Shares', 'Price', 'Change')
+    separator = '-' * 10 + ' '
     #Printing table
     print('%10s %10s %10s %10s' % headers)
     print(separator * len(headers))
-    for name, shares, prices, change in portfolio_with_change:
+    for name, shares, prices, change in report:
         prices_s = '$' + str(prices)
         print(f'{name:>10s} {shares:>10s} {prices_s:>10s} {change:>10.2f}')
